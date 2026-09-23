@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="AcSoft.Api/AcSoft.Api.csproj" />
+  <Project Path="AcSoft.Application/AcSoft.Application.csproj" />
+  <Project Path="AcSoft.Domain/AcSoft.Domain.csproj" />
+  <Project Path="AcSoft.Infrastructure/AcSoft.Infrastructure.csproj" />
+</Solution>

@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AcSoft.Application\AcSoft.Application.csproj" />
+    <ProjectReference Include="..\AcSoft.Domain\AcSoft.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Services\" />
+    <Folder Include="Persistence\DbContext\" />
+    <Folder Include="Persistence\Configurations\" />
+  </ItemGroup>
+
+</Project>
