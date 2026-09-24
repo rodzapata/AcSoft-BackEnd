@@ -4,13 +4,9 @@ using System.Text;
 
 namespace AcSoft.Domain.Enums;
 
-public enum WorkOrderStatus
+public enum WorkOrderActivityStatus
 {
     Pending = 1,
-    Assigned = 2,
-    InProgress = 3,
-    Waiting = 4,
-    Completed = 5,
-    Cancelled = 6
+    Completed = 2,
+    NotApplicable = 3
 }
-
