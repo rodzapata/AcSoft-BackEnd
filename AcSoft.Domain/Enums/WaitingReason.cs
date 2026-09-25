@@ -10,6 +10,6 @@ public enum WaitingReason
     SparePart = 2,
     Authorization = 3,
     EquipmentShutdown = 4,
-    Weather = 5,
+    Access = 5,
     Other = 99
 }
