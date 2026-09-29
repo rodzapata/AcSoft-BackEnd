@@ -16,13 +16,15 @@ public sealed class WorkSession
         Guid technicianId,
         Guid workOrderId,
         WorkSessionType type,
-        DateTimeOffset startedAt)
+        DateTimeOffset startedAt,
+        WaitingReason? waitingReason)
     {
         Id = id;
         TechnicianId = technicianId;
         WorkOrderId = workOrderId;
         Type = type;
         StartedAt = startedAt;
+        WaitingReason = waitingReason;
     }
 
     public Guid Id { get; private set; }
@@ -32,6 +34,8 @@ public sealed class WorkSession
     public Guid WorkOrderId { get; private set; }
 
     public WorkSessionType Type { get; private set; }
+
+    public WaitingReason? WaitingReason { get; private set; }
 
     public DateTimeOffset StartedAt { get; private set; }
 
@@ -48,7 +52,8 @@ public sealed class WorkSession
         Guid technicianId,
         Guid workOrderId,
         WorkSessionType type,
-        DateTimeOffset startedAt)
+        DateTimeOffset startedAt,
+        WaitingReason? waitingReason = null)
     {
         if (technicianId == Guid.Empty)
             throw new ArgumentException(
@@ -60,12 +65,15 @@ public sealed class WorkSession
                 "La orden de trabajo es obligatoria.",
                 nameof(workOrderId));
 
+        ValidateWaitingReason(type, waitingReason);
+
         return new WorkSession(
             Guid.NewGuid(),
             technicianId,
             workOrderId,
             type,
-            startedAt);
+            startedAt,
+            waitingReason);
     }
 
     public void End(DateTimeOffset endedAt)
@@ -79,5 +87,24 @@ public sealed class WorkSession
                 "La fecha de finalización no puede ser anterior al inicio.");
 
         EndedAt = endedAt;
+    }
+
+    private static void ValidateWaitingReason(
+        WorkSessionType type,
+        WaitingReason? waitingReason)
+    {
+        if (type == WorkSessionType.Waiting &&
+            waitingReason is null)
+        {
+            throw new InvalidOperationException(
+                "Una sesión de espera debe tener un motivo.");
+        }
+
+        if (type != WorkSessionType.Waiting &&
+            waitingReason is not null)
+        {
+            throw new InvalidOperationException(
+                "El motivo de espera solamente puede utilizarse en una sesión Waiting.");
+        }
     }
 }
