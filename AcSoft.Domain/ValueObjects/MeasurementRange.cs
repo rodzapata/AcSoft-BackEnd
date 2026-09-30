@@ -32,6 +32,25 @@ public sealed record MeasurementRange
             maximum);
     }
 
+    public static MeasurementRange FromTolerance(
+        decimal nominalValue,
+        Percentage tolerance)
+    {
+        if (nominalValue < 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(nominalValue),
+                "El valor nominal no puede ser negativo.");
+        }
+
+        var difference =
+            nominalValue * tolerance.Value / 100m;
+
+        return new MeasurementRange(
+            nominalValue - difference,
+            nominalValue + difference);
+    }
+
     public bool Contains(decimal value)
     {
         return value >= Minimum &&
