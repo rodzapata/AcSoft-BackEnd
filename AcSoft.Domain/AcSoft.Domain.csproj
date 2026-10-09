@@ -10,7 +10,6 @@
     <Folder Include="Common\" />
     <Folder Include="Exceptios\" />
     <Folder Include="Events\" />
-    <Folder Include="ValueObjects\" />
   </ItemGroup>
 
 </Project>
