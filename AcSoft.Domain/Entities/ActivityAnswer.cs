@@ -1,4 +1,5 @@
-﻿using AcSoft.Domain.ValueObjects;
+﻿using AcSoft.Domain.Enums;
+using AcSoft.Domain.ValueObjects;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -26,28 +27,54 @@ public sealed class ActivityAnswer
     public AnswerValue Value { get; private set; } = null!;
 
     public static ActivityAnswer Create(
-        Guid questionId,
+        Question question,
         AnswerValue value)
     {
-        if (questionId == Guid.Empty)
-        {
-            throw new ArgumentException(
-                "La pregunta es obligatoria.",
-                nameof(questionId));
-        }
-
+        ArgumentNullException.ThrowIfNull(question);
         ArgumentNullException.ThrowIfNull(value);
+
+        ValidateValue(question, value);
 
         return new ActivityAnswer(
             Guid.NewGuid(),
-            questionId,
+            question.Id,
             value);
     }
 
-    public void ChangeValue(AnswerValue value)
+    public void ChangeValue(
+        Question question,
+        AnswerValue value)
     {
+        ArgumentNullException.ThrowIfNull(question);
         ArgumentNullException.ThrowIfNull(value);
 
+        if (question.Id != QuestionId)
+        {
+            throw new InvalidOperationException(
+                "La pregunta no corresponde a esta respuesta.");
+        }
+
+        ValidateValue(question, value);
+
         Value = value;
+    }
+
+    private static void ValidateValue(
+        Question question,
+        AnswerValue value)
+    {
+        if (!value.Matches(question.AnswerType))
+        {
+            throw new InvalidOperationException(
+                "El tipo de respuesta no corresponde al tipo de pregunta.");
+        }
+
+        if (question.AnswerType == AnswerType.Measurement &&
+            !value.MatchesMeasurementType(
+                question.MeasurementType!.Value))
+        {
+            throw new InvalidOperationException(
+                "La magnitud de la medición no corresponde a la pregunta.");
+        }
     }
 }

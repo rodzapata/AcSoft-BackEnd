@@ -80,4 +80,18 @@ public sealed record AnswerValue
             AnswerType.Measurement,
             measurements: items);
     }
+
+    public bool Matches(AnswerType expectedType)
+    {
+        return Type == expectedType;
+    }
+
+    public bool MatchesMeasurementType(
+    MeasurementType expectedType)
+    {
+        return Type == AnswerType.Measurement &&
+               Measurements.All(
+                   measurement => measurement.Value.Type == expectedType);
+    }
+
 }
