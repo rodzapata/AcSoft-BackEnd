@@ -6,7 +6,7 @@ namespace AcSoft.Domain.Entities;
 
 public sealed class Activity
 {
-    private readonly List<Question> _questions = [];
+    private readonly List<ActivityQuestion> _questions = [];
 
     private Activity() { }
 
@@ -30,7 +30,7 @@ public sealed class Activity
 
     public string Description { get; private set; } = null!;
 
-    public IReadOnlyCollection<Question> Questions =>
+    public IReadOnlyCollection<ActivityQuestion> Questions =>
         _questions.AsReadOnly();
 
     public static Activity Create(
@@ -59,16 +59,33 @@ public sealed class Activity
             description?.Trim() ?? string.Empty);
     }
 
-    public void AddQuestion(Question question)
+    public void AddQuestion(
+        Question question,
+        int sequence,
+        bool isRequired = true)
     {
         ArgumentNullException.ThrowIfNull(question);
 
-        if (_questions.Any(q => q.Id == question.Id))
+        if (_questions.Any(
+            x => x.QuestionId == question.Id))
         {
             throw new InvalidOperationException(
                 "La pregunta ya está asociada a esta actividad.");
         }
 
-        _questions.Add(question);
+        if (_questions.Any(
+            x => x.Sequence == sequence))
+        {
+            throw new InvalidOperationException(
+                "Ya existe una pregunta con esa secuencia.");
+        }
+
+        var activityQuestion = ActivityQuestion.Create(
+            Id,
+            question,
+            sequence,
+            isRequired);
+
+        _questions.Add(activityQuestion);
     }
 }

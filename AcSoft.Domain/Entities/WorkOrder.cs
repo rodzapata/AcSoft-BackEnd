@@ -8,6 +8,8 @@ namespace AcSoft.Domain.Entities;
 public sealed class WorkOrder
 {
     private readonly List<WorkOrderAssignment> _assignments = [];
+    private readonly List<WorkOrderActivity> _activities = [];
+
 
     private WorkOrder()
     {
@@ -38,6 +40,10 @@ public sealed class WorkOrder
 
     public IReadOnlyCollection<WorkOrderAssignment> Assignments =>
         _assignments.AsReadOnly();
+
+    public IReadOnlyCollection<WorkOrderActivity> Activities =>
+        _activities.AsReadOnly();
+
 
     public Guid? CurrentTechnicianId =>
         _assignments
@@ -182,8 +188,27 @@ public sealed class WorkOrder
     public void Complete()
     {
         if (Status != WorkOrderStatus.InProgress)
+        {
             throw new InvalidOperationException(
                 "Solo una orden en ejecución puede completarse.");
+        }
+
+        if (_activities.Count == 0)
+        {
+            throw new InvalidOperationException(
+                "No se puede completar una orden de trabajo sin actividades.");
+        }
+
+        var incompleteActivities = _activities
+            .Where(activity => !activity.IsCompleted)
+            .ToList();
+
+        if (incompleteActivities.Count > 0)
+        {
+            throw new InvalidOperationException(
+                $"No se puede completar la orden de trabajo. " +
+                $"Hay {incompleteActivities.Count} actividad(es) pendiente(s).");
+        }
 
         Status = WorkOrderStatus.Completed;
     }
@@ -211,4 +236,62 @@ public sealed class WorkOrder
             throw new InvalidOperationException(
                 "No se puede asignar un técnico a una orden cancelada.");
     }
+
+    public WorkOrderActivity AddActivity(
+        Activity activity,
+        ExecutionMoment moment,
+        int sequence,
+        bool isUnplanned = false)
+    {
+        ArgumentNullException.ThrowIfNull(activity);
+
+        if (Status is WorkOrderStatus.Completed or WorkOrderStatus.Cancelled)
+        {
+            throw new InvalidOperationException(
+                "No se pueden agregar actividades a una orden completada o cancelada.");
+        }
+
+        if (Status == WorkOrderStatus.Waiting)
+        {
+            throw new InvalidOperationException(
+                "No se pueden agregar actividades mientras la orden está en espera.");
+        }
+
+        if (Status == WorkOrderStatus.InProgress && !isUnplanned)
+        {
+            throw new InvalidOperationException(
+                "Durante la ejecución solo se pueden agregar actividades no planificadas.");
+        }
+
+        if (sequence <= 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(sequence),
+                "La secuencia debe ser mayor que cero.");
+        }
+
+        var sequenceAlreadyExists = _activities.Any(
+            x => x.Moment == moment && x.Sequence == sequence);
+
+        if (sequenceAlreadyExists)
+        {
+            throw new InvalidOperationException(
+                "Ya existe una actividad con esa secuencia para el momento indicado.");
+        }
+
+        var workOrderActivity = WorkOrderActivity.Create(
+            workOrderId: Id,
+            activityId: activity.Id,
+            moment: moment,
+            sequence: sequence,
+            isUnplanned: isUnplanned);
+
+        workOrderActivity.ConfigureQuestions(activity);
+
+        _activities.Add(workOrderActivity);
+
+        return workOrderActivity;
+    }
+
+
 }

@@ -21,60 +21,31 @@ public sealed class ActivityAnswer
     }
 
     public Guid Id { get; private set; }
-
     public Guid QuestionId { get; private set; }
-
     public AnswerValue Value { get; private set; } = null!;
 
-    public static ActivityAnswer Create(
-        Question question,
+    internal static ActivityAnswer Create(
+        Guid questionId,
         AnswerValue value)
     {
-        ArgumentNullException.ThrowIfNull(question);
-        ArgumentNullException.ThrowIfNull(value);
+        if (questionId == Guid.Empty)
+        {
+            throw new ArgumentException(
+                "La pregunta es obligatoria.",
+                nameof(questionId));
+        }
 
-        ValidateValue(question, value);
+        ArgumentNullException.ThrowIfNull(value);
 
         return new ActivityAnswer(
             Guid.NewGuid(),
-            question.Id,
+            questionId,
             value);
     }
 
-    public void ChangeValue(
-        Question question,
-        AnswerValue value)
+    internal void ChangeValue(AnswerValue value)
     {
-        ArgumentNullException.ThrowIfNull(question);
         ArgumentNullException.ThrowIfNull(value);
-
-        if (question.Id != QuestionId)
-        {
-            throw new InvalidOperationException(
-                "La pregunta no corresponde a esta respuesta.");
-        }
-
-        ValidateValue(question, value);
-
         Value = value;
-    }
-
-    private static void ValidateValue(
-        Question question,
-        AnswerValue value)
-    {
-        if (!value.Matches(question.AnswerType))
-        {
-            throw new InvalidOperationException(
-                "El tipo de respuesta no corresponde al tipo de pregunta.");
-        }
-
-        if (question.AnswerType == AnswerType.Measurement &&
-            !value.MatchesMeasurementType(
-                question.MeasurementType!.Value))
-        {
-            throw new InvalidOperationException(
-                "La magnitud de la medición no corresponde a la pregunta.");
-        }
     }
 }
