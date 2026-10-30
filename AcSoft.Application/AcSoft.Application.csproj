@@ -11,7 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Abstractions\Services\" />
     <Folder Include="Features\WorkOrders\Validators\" />
     <Folder Include="Features\WorkOrders\Queries\" />
     <Folder Include="UseCases\" />

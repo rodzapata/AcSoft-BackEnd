@@ -7,5 +7,5 @@ namespace AcSoft.Application.Abstractions.Persistence;
 public interface IUnitOfWork
 {
     Task<int> SaveChangesAsync(
-        CancellationToken cancellationToken);
+        CancellationToken cancellationToken = default);
 }
