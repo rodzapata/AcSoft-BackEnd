@@ -1,5 +1,6 @@
 
 using AcSoft.Application.Features.WorkOrders.Commands;
+using AcSoft.Infrastructure;
 
 namespace AcSoft.Api;
 
@@ -14,7 +15,11 @@ public class Program
         builder.Services.AddControllers();
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 
+        builder.Services.AddInfrastructure(builder.Configuration);
+
         builder.Services.AddScoped<CreateWorkOrderHandler>();
+
+        builder.Services.AddScoped<CreateWorkOrderFromMaintenancePlanHandler>();
 
         builder.Services.AddOpenApi();
 
