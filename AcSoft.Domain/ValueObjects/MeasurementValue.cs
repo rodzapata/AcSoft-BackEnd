@@ -7,10 +7,11 @@ namespace AcSoft.Domain.ValueObjects;
 
 public sealed record MeasurementValue
 {
-    public MeasurementType Type { get; }
+    public MeasurementType Type { get; private set; }
 
-    public decimal Value { get; }
+    public decimal Value { get; private set; }
 
+    private MeasurementValue() { }
     private MeasurementValue(
         MeasurementType type,
         decimal value)
@@ -18,6 +19,8 @@ public sealed record MeasurementValue
         Type = type;
         Value = value;
     }
+
+
 
     public static MeasurementValue FromVoltage(Voltage voltage)
     {

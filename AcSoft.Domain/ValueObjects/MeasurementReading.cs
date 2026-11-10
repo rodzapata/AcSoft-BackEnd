@@ -6,9 +6,11 @@ namespace AcSoft.Domain.ValueObjects;
 
 public sealed record MeasurementReading
 {
-    public string Point { get; }
 
-    public MeasurementValue Value { get; }
+    public string Point { get; private set; } = null!;
+    public MeasurementValue Value { get; private set; } = null!;
+    private MeasurementReading() { }
+
 
     private MeasurementReading(
         string point,
@@ -17,6 +19,7 @@ public sealed record MeasurementReading
         Point = point;
         Value = value;
     }
+
 
     public static MeasurementReading Create(
         string point,

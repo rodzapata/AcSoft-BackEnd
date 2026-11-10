@@ -25,13 +25,10 @@ public sealed class ActivityQuestionConfiguration
         builder.Property(x => x.IsRequired)
             .IsRequired();
 
-        // QuestionId es una propiedad calculada del dominio.
-        builder.Ignore(x => x.QuestionId);
-
         // EF Core utiliza una FK de sombra llamada QuestionId.
         builder.HasOne(x => x.Question)
             .WithMany()
-            .HasForeignKey("QuestionId")
+            .HasForeignKey(x => x.QuestionId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasIndex("ActivityId", "Sequence")
