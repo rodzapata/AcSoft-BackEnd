@@ -41,24 +41,32 @@ public class Program
         }
         */
 
-        Console.WriteLine("Iniciando prueba de conexión...");
-
         using (var scope = app.Services.CreateScope())
         {
-            Console.WriteLine("Creando scope...");
+            try
+            {
+                var context = scope.ServiceProvider
+                    .GetRequiredService<AcDbContext>();
 
-            var context = scope.ServiceProvider
-                .GetRequiredService<AcDbContext>();
+                // Fuerza la construcción del modelo de EF Core.
+                var model = context.Model;
 
-            Console.WriteLine("DbContext obtenido correctamente.");
+                Console.WriteLine("Modelo de EF Core construido correctamente.");
 
-            var canConnect = await context.Database.CanConnectAsync();
+                // Comprueba la conexión con PostgreSQL.
+                var canConnect = await context.Database.CanConnectAsync();
 
-            Console.WriteLine(
-                $"Conexión a PostgreSQL: {(canConnect ? "Exitosa" : "Fallida")}");
+                Console.WriteLine(
+                    $"Conexión a PostgreSQL: {canConnect}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error al validar EF Core o PostgreSQL:");
+                Console.WriteLine(ex.ToString());
+            }
         }
 
-        Console.WriteLine("Finalizó la prueba de conexión.");
+
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())

@@ -91,6 +91,7 @@ public sealed class WorkOrder
                 "La orden ya tiene un técnico asignado.");
 
         var assignment = WorkOrderAssignment.Create(
+            Id,
             technicianId,
             assignedAt);
 
@@ -100,6 +101,7 @@ public sealed class WorkOrder
     }
 
     public void UnassignTechnician(
+        Guid id,
         DateTimeOffset unassignedAt,
         AssignmentEndReason reason)
     {
@@ -121,6 +123,7 @@ public sealed class WorkOrder
     }
 
     public void ReassignTechnician(
+        Guid id,
         Guid newTechnicianId,
         DateTimeOffset changedAt)
     {
@@ -142,6 +145,7 @@ public sealed class WorkOrder
             AssignmentEndReason.Reassigned);
 
         var newAssignment = WorkOrderAssignment.Create(
+            Id,
             newTechnicianId,
             changedAt);
 

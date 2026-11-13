@@ -13,15 +13,19 @@ public sealed class WorkOrderAssignment
 
     private WorkOrderAssignment(
         Guid id,
+        Guid workOrderId,
         Guid technicianId,
         DateTimeOffset assignedAt)
     {
         Id = id;
+        WorkOrderId = workOrderId;
         TechnicianId = technicianId;
         AssignedAt = assignedAt;
     }
 
     public Guid Id { get; private set; }
+
+    public Guid WorkOrderId { get; private set; }
 
     public Guid TechnicianId { get; private set; }
 
@@ -34,9 +38,15 @@ public sealed class WorkOrderAssignment
     public bool IsActive => UnassignedAt is null;
 
     internal static WorkOrderAssignment Create(
+        Guid workOrderId,
         Guid technicianId,
         DateTimeOffset assignedAt)
     {
+        if (workOrderId == Guid.Empty)
+            throw new ArgumentException(
+                "La orden de trabajo es obligatoria.",
+                nameof(workOrderId));
+
         if (technicianId == Guid.Empty)
             throw new ArgumentException(
                 "El técnico es obligatorio.",
@@ -44,6 +54,7 @@ public sealed class WorkOrderAssignment
 
         return new WorkOrderAssignment(
             Guid.NewGuid(),
+            workOrderId,
             technicianId,
             assignedAt);
     }

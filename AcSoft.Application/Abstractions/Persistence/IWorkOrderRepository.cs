@@ -14,4 +14,8 @@ public interface IWorkOrderRepository
     Task<WorkOrder?> GetByIdAsync(
         Guid id,
         CancellationToken cancellationToken);
+
+    Task<WorkOrder?> GetByIdWithDetailsAsync(
+        Guid id,
+        CancellationToken cancellationToken);
 }

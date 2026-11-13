@@ -35,4 +35,21 @@ public sealed class WorkOrderRepository
                 x => x.Id == id,
                 cancellationToken);
     }
+
+
+    public async Task<WorkOrder?> GetByIdWithDetailsAsync(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        return await _context.WorkOrders
+            .AsSplitQuery()
+            .Include(x => x.Activities)
+                .ThenInclude(x => x.Questions)
+            .Include(x => x.Activities)
+                .ThenInclude(x => x.Answers)
+            .FirstOrDefaultAsync(
+                x => x.Id == id,
+                cancellationToken);
+    }
+
 }
